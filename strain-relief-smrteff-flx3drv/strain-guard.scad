@@ -152,18 +152,20 @@ module ziptie_tube_coupler(
                     radius=r2,
                     wall=thickness/2);
 
-                echo(ziptie_bracket_height, depth, width/2, thickness/2);
                 oval_tube(
                     height=ziptie_bracket_height,
                     rx=depth,
                     ry=width/2,
                     wall=thickness/2);
 
-                oval_tube(
-                    height=top_tube_height,
-                    rx=depth,
-                    ry=width/2,
-                    wall=thickness/2);
+                if (top_tube_height > ziptie_bracket_height)
+                {
+                    oval_tube(
+                        height=top_tube_height,
+                        rx=depth,
+                        ry=width/2,
+                        wall=thickness/2);
+                }
             }
 
             color("palegreen")
@@ -176,13 +178,16 @@ module ziptie_tube_coupler(
                 cube([2*r2+thickness, 2*r2, ziptie_bracket_height+1], center=true);
 
                 for (y_coord = [
-                    -width/2-thickness,
-                    -width/2+thickness,
-                     width/2-thickness,
-                     width/2+thickness])
+                        -width/2+thickness,
+                        width/2-thickness,
+                     ])
                 {
-                    translate([0, y_coord, ziptie_bracket_height/2])
-                    cube([2*(max(r2, r1)+1), ziptie_hole_width, ziptie_hole_height], center=true);
+                    if (top_tube_height > ziptie_bracket_height)
+                    let (ziptie_hole_z = (top_tube_height-ziptie_bracket_height)/2+ziptie_bracket_height)
+                    {
+                        translate([0, y_coord, ziptie_hole_z])
+                        cube([2*(max(r2, r1)+1), ziptie_hole_width, ziptie_hole_height], center=true);
+                    }
                 }
             }
         }
@@ -191,21 +196,26 @@ module ziptie_tube_coupler(
 
 // Objects
 
+z_and_heights = [
+    [0,    13],
+    [25/2, 13],
+    [25,   0 ],
+];
+
 difference()
 {
     union()
     {
-        for (z_coord = [
-            0,
-            25/2,
-            25])
+        for (z_and_t = z_and_heights)
+        let (z = z_and_t[0], t = z_and_t[1])
         {
-            translate([0, 0, z_coord])
+            echo(z_and_t);
+            translate([0, 0, z])
             ziptie_tube_coupler(
                 width=15, thickness=2.4,
                 r1=6.5/2, r2=13/2,
                 ziptie_height=2.5,
-                top_tube_height=13);
+                top_tube_height=t);
         }
 
     }

@@ -430,5 +430,5 @@ module picam_back()
 *yrot(180) rpi0_cover();
 
 
-print_part("camera");
-ymove(40) print_part("lid");
+print_part("camera", with_mount_holes=true);
+*print_part("lid", with_mount_holes=true);

@@ -204,6 +204,7 @@ module picamera (
         holder_space = 10;
         mod = flip ? 1 : -1;
         with_arms = false;
+        with_hang_nut = true;
 
         body();
 
@@ -215,6 +216,33 @@ module picamera (
                 }
                 translate([(holder_space+walls)/2, 0 , 0]) {
                     holderarm();
+                }
+            }
+        }
+
+        // add material so the case can be hung
+        let(
+            hang_width = 8,
+            hang_length = 4,
+            insert_d = 4.8,
+            insert_h = 3,
+            insert_cavity = 2
+        )
+        if (with_hang_nut) {
+            translate([-hang_width/2, mod*(pcb.y) - 2, 0]) {
+                difference()
+                {
+                    translate([hang_width/2, hang_length + 3, body_z/2])
+                    rotate([90, 0, 0])
+                    cylinder(h=hang_length + 3, d=body_z);
+
+                    translate([hang_width/2, 3, body_z/2])
+                    rotate([90, 0, 0])
+                    cylinder(h=insert_h, d=insert_d);
+
+                    #translate([hang_width/2, 3 + insert_cavity, body_z/2])
+                    rotate([90, 0, 0])
+                    cylinder(h=insert_cavity, d=3.1);
                 }
             }
         }
@@ -519,24 +547,26 @@ module arm (
 /**
  * Decide which part to print based on the given parameter
  */
-module print_part(part="all") {
+module print_part(part="all", with_mount_holes=true) {
+    the_screw = cnf_screw;
+    the_screwhead = cnf_screwhead;
     if (part == "camera" ) {
         picamera(
             part="camera",
             flip = cnf_flip,
-            lidscrew = cnf_lidscrew,
+            lidscrew = with_mount_holes,
             walls = cnf_walls,
-            screw = cnf_screw,
-            screwhead = cnf_screwhead
+            screw = the_screw,
+            screwhead = the_screwhead
         );
     } else if (part == "lid") {
         picamera(
               part="lid",
               flip = cnf_flip,
-              lidscrew = cnf_lidscrew,
+              lidscrew = with_mount_holes,
               walls = cnf_walls,
-              screw = cnf_screw,
-              screwhead = cnf_screwhead
+              screw = the_screw,
+              screwhead = the_screwhead
           );
     } else if (part == "post") {
         post(

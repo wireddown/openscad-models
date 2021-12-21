@@ -9,7 +9,7 @@
 
 // Globals
 
-$fn = 60;
+$fn = 8 * 12;
 eps = 0.01;
 
 base_diameter = 170;
@@ -17,6 +17,9 @@ base_height   = 10;
 
 post_diameter = 50;
 post_height = base_height + 40;
+
+hole_diameter = 32;
+hole_height = post_height;
 
 notch_diameter = 13;
 notch_height   = 3.6;
@@ -49,7 +52,12 @@ difference()
     union()
     {
         cylinder(h=base_height, d=base_diameter);
-        cylinder(h=post_height, d=post_diameter);
+        cylinder(h=post_height, d1=post_diameter+2, d2=post_diameter-2);
+    }
+
+    translate([0, 0, -eps])
+    {
+        cylinder(h=hole_height+2*eps, d=hole_diameter);
     }
 
     translate([notch_inset, 0, -eps])

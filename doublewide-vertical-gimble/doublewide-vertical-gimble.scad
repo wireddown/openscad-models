@@ -11,6 +11,8 @@ use <bearing.scad>
 use <MCAD/regular_shapes.scad>
 use <MCAD/metric_fastners.scad>
 
+use <BOSL/transforms.scad>
+
 // Globals
 
 convexity = 4;
@@ -175,6 +177,15 @@ module motor_bracket(
     }
 }
 
+module paw_mask()
+{
+    linear_extrude(5)
+    ymove(70)
+    scale([0.677, 0.677, 1])
+    zrot(-90)
+    import("paw-outline.svg");
+}
+
 metric_size=4;
 bearing_size=624;
 
@@ -188,3 +199,5 @@ translate([0, 0, gimble_thickness]) rotate([180, 0, 0])
 motor_bracket(metric_size, bearing_size, thickness=13);
 
 *bolt(dia=4, len=20);
+
+paw_mask();

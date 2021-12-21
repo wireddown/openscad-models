@@ -80,31 +80,31 @@ module hexnut_inset(
 module extrusion_bracket(
     metric_size,
     bearing_size,
-    thickness=10,
-    bearing_offset=0
+    thickness,
+    height = 60,
+    bearing_offset = 0
 )
 {
     let (
         doublewide_width = 40,
-        height = doublewide_width,
         center_spacing = doublewide_width / 2,
         margin = (doublewide_width-center_spacing) / 2,
-        bolt_hole_factor = 1.1,
+        bolt_hole_factor = 1.2,
         bearing_id = bearingInnerDiameter(bearing_size)
     )
     difference()
     {
-        color("lawngreen")
+        color("palegreen")
         union()
         {
-            cube([thickness, (doublewide_width), height]);
+            cube([thickness, doublewide_width, height]);
         }
 
-        color("magenta")
+        color("honeydew")
         union()
         {
             // With counter sink:
-            translate([5-eps, 0, 0])
+            translate([5, 0, 0])
             {
                 // Cut mounting bolt holes
                 for (bolt_y = [
@@ -115,14 +115,14 @@ module extrusion_bracket(
                     translate([0, bolt_y, height-margin])
                     rotate([0, 90, 0])
                     scale([bolt_hole_factor, bolt_hole_factor, 1])
-                    cap_bolt(dia=metric_size, len=16);
+                    cap_bolt(dia=metric_size, len=thickness);
                 }
 
                 // Cut bearing bolt hole
-                translate([2*eps, bearing_offset+doublewide_width/2, 1.5*margin])
+                translate([thickness-margin, bearing_offset+doublewide_width/2, 1.5*margin])
                 rotate([0, -90, 0])
                 scale([bolt_hole_factor, bolt_hole_factor, 1])
-                cap_bolt(dia=bearing_id, len=16);
+                cap_bolt(dia=bearing_id, len=thickness);
             }
         }
     }
@@ -131,26 +131,28 @@ module extrusion_bracket(
 module motor_bracket(
     metric_size,
     bearing_size,
-    thickness=10
+    thickness
 )
 {
     let (
         bracket_width = 50,
+        radius = bracket_width/2,
         bearing_od = bearingOuterDiameter(bearing_size),
         center_spacing = 30,
-        bolt_hole_factor = 1.1
+        bolt_hole_factor = 1.2,
+        countersink_correction = -0.25
     )
     difference()
     {
-        color("lawngreen")
+        color("deepskyblue")
         union()
         {
-            oval_tube(thickness, rx=bracket_width/2, ry=bracket_width/2, wall=(bracket_width-bearing_od)/2);
+            oval_tube(thickness, rx=radius, ry=radius, wall=(bracket_width-bearing_od)/2);
         }
 
-        color("magenta")
+        color("lightcyan")
         {
-            translate([0, 0, 5-eps])
+            translate([0, 0, 5])
             for (y_pos = [
                     -bracket_width/5,
                     bracket_width/5,
@@ -160,13 +162,11 @@ module motor_bracket(
                     center_spacing/2,
                 ])
             {
-                translate([x_pos, y_pos, 0])
+                translate([x_pos, y_pos, -5+countersink_correction])
                 {
-                    translate([0, 0, -5.25])
                     scale([bolt_hole_factor, bolt_hole_factor, 2])
-                    bolt(dia=metric_size, len=8);
+                    bolt(dia=metric_size, len=1+thickness/2);
 
-                    translate([0, 0, -5-0.25])
                     scale([bolt_hole_factor, bolt_hole_factor, 1])
                     flat_nut(dia=metric_size);
                 }
@@ -175,8 +175,16 @@ module motor_bracket(
     }
 }
 
-translate([-20, 30, 0]) rotate([0, 90, 0]) extrusion_bracket(metric_size=4, bearing_size=624, bearing_offset=-10);
+metric_size=4;
+bearing_size=624;
 
-rotate([180, 0, 0]) motor_bracket(metric_size=4, bearing_size=624);
+static_thickness=8;
+gimble_thickness=13;
+
+translate([-20, 30, static_thickness]) rotate([0, 90, 0])
+extrusion_bracket(metric_size, bearing_size, thickness=8, height=60);
+
+translate([0, 0, gimble_thickness]) rotate([180, 0, 0])
+motor_bracket(metric_size, bearing_size, thickness=13);
 
 *bolt(dia=4, len=20);

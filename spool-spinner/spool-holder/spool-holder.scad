@@ -1,3 +1,12 @@
+//  Characters    Behavior
+//     //            ignore, comment
+//     $fa           minimum angle
+//     *             disable
+//     !             show only
+//     #             highlight / debug
+//     %             transparent / background
+// http://www.openscad.org/cheatsheet/index.html
+
 // Globals
 
 $fn = 60;
@@ -15,7 +24,9 @@ notch_length   = 30;
 
 notch_inset = base_diameter/2 - notch_diameter/2;
 
-// Geometry
+// Functions
+
+// Modules
 
 module notch(h, d, l)
 {
@@ -28,6 +39,8 @@ module notch(h, d, l)
         }
     }
 }
+
+// Objects
 
 *notch(notch_height, notch_diameter, notch_length);
 

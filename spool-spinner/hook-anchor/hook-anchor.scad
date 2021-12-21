@@ -54,6 +54,7 @@ module notch(h, d, l)
 
 // Objects
 
+rotate([0, 180, 0])
 union()
 {
     difference()
@@ -77,10 +78,26 @@ union()
     }
 
     color("blue")
-    translate([notch_radius-0.6, notch_radius-1.6, notch_height/2+eps])
-    cube([1.6, 3.2, notch_height+2*eps], center=true);
+    {
+        // Retaining posts
+        translate([notch_radius-0.6, 0, notch_height/2+eps])
+        {
+            translate([0, notch_radius-2.7, 0])
+            cube([1.6, 1.6, notch_height+2*eps], center=true);
 
-    color("blue")
-    translate([notch_radius-0.6, -(notch_radius-1.6), notch_height/2+eps])
-    cube([1.6, 3.2, notch_height+2*eps], center=true);
+            translate([0, -(notch_radius-2.7), 0])
+            cube([1.6, 1.6, notch_height+2*eps], center=true);
+        }
+
+        // Snuggle nubbins
+        translate([2, 0, 0])
+        scale([1.2, 1, 1])
+        {
+            translate([0, notch_radius-0.8, 0])
+            cylinder(h=notch_height+2*eps, d=1.6);
+
+            translate([0, -(notch_radius-0.8), 0])
+            cylinder(h=notch_height+2*eps, d=1.6);
+        }
+    }
 }

@@ -7,6 +7,8 @@
 //     %             transparent / background
 // http://www.openscad.org/cheatsheet/index.html
 
+use <MCAD/regular_shapes.scad>
+
 // Globals
 
 $fn = 8 * 12;
@@ -71,6 +73,17 @@ module spiral2d(r, thickness, height, loops, skip_first=true)
     );
 }
 
+module half_torus(r, thickness)
+{
+    difference()
+    {
+        oval_torus(r, thickness);
+
+        translate([0, -max(thickness)-r, -max(thickness)/2-0.5])
+        cube([r+max(thickness)+1, 2*(r+max(thickness))+1, max(thickness)+1]);
+    }
+}
+
 // Objects
 
 union()
@@ -81,13 +94,16 @@ union()
         {
             color("orange")
             {
+                // Arm
                 translate([0, 0, -4.7])
                 notch(10, 10, 36);
 
+                // Riser
                 translate([27, -5, 0])
                 cube([14, 10, 30]);
             }
 
+            // Reference measurements
             *color("green")
             {
                 translate([6.6, 0, 5.2])
@@ -98,19 +114,79 @@ union()
             }
         }
 
-        #color("brown")
         {
-            translate([0, 0, -1*eps])
-            import("anchor-for-spool-spinner-filament-hook-v1.stl");
-
-            translate([-33.1, 0, -5])
-            cylinder(h=5, d=80);
-
-            translate([35, 6, 21])
-            rotate([90, -165, 0])
+            color("red")
+            translate([0, 0, 0.4])
             {
-                spiral2d(r=1, thickness=2, height=12, loops=1.72);
-                spiral2d(r=11, thickness=4, height=12, loops=0.62, skip_first=false);
+                // Anchor stand-in
+                translate([0, 0, 1*eps])
+                import("anchor-for-spool-spinner-filament-hook-v1.stl");
+
+                // Bracket stand-in
+                translate([-33.1, 0, 0])
+                {
+                    translate([0, 0, notch_height-0])
+                        cylinder(h=10, d=80);
+                    translate([0, 0, -10+0.4])
+                        cylinder(h=10, d=80);
+                }
+            }
+
+            color("brown")
+            {
+                // Bounds
+                translate([6, 3.3, -50])
+                    cube([100,4,100]);
+                translate([6, -7.3, -50])
+                    cube([100,4,100]);
+
+                // Arm cutaways
+                translate([18, -1.6, -6])
+                rotate([90, 0, 2])
+                    notch(h=3, d=16, l=40);
+                translate([18, 4.6, -6])
+                rotate([90, 0, -2])
+                    notch(h=3, d=16, l=40);
+                translate([23, 3, -10])
+                rotate([90, 0, 0])
+                    notch(h=6, d=16, l=20);
+
+                // Riser cutaways
+                translate([40, 1, 3])
+                rotate([0, 91, 88])
+                    notch(h=3, d=20, l=40);
+                translate([40, -4, 3])
+                rotate([0, 89, 92])
+                    notch(h=3, d=20, l=40);
+                translate([46, -4, 2])
+                rotate([0, 90, 90])
+                    notch(h=8, d=24, l=40);
+            }
+
+            translate([35, 0, 0])
+            {
+                // Hook
+                color("blue")
+                translate([0, 6, 21])
+                rotate([90, -165, 0])
+                {
+                    spiral2d(r=1, thickness=2, height=12, loops=1.72);
+                    spiral2d(r=11, thickness=4, height=12, loops=0.62, skip_first=false);
+                }
+
+                // Saddles
+                color("purple")
+                translate([0, 0, 10])
+                rotate([0, 90, 0])
+                {
+                    translate([-3.1, 0, -1])
+                    half_torus(r=3.25, thickness=[5, 8.2]);
+
+                    translate([-17, 0, -1.4])
+                    rotate([0, -195, 0])
+                    half_torus(r=3.5, thickness=[4, 6]);
+                }
+
             }
         }
 

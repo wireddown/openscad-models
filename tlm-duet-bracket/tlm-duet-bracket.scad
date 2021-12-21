@@ -4,7 +4,7 @@
 //     *             disable
 //     !             show only
 //     #             highlight / debug
-//     %             transparent / background
+//     %             enable alpha
 // http://www.openscad.org/cheatsheet/index.html
 
 include <MCAD/nuts_and_bolts.scad>;
@@ -22,12 +22,12 @@ $fn = number_of_fragments;
 bracket_height  = 3;
 bracket_width   = 13;
 
-m3_pass_thru    = 3 + 0.75;
+m3_pass_thru    = 3 + 0.70;
 
 m4              = 4;
-m4_nut_diameter = 7.5 + 0.6;
+m4_nut_diameter = 7.5 + 0.50;
 m4_inset_depth  = 6;
-m4_inset_wall   = 2.7;
+m4_inset_wall   = 2.75;
 m4_inset_facade = 3;
 
 tevo_width  = 87;
@@ -143,6 +143,7 @@ module hexnut_inset(
 
 // Objects
 
+//projection(cut=true) translate([0, 0, -1])
 difference()
 {
     union()
@@ -178,6 +179,14 @@ difference()
             translate([duet_length, 0, 0])
             hexnut_inset(metric_size=m4, height=m4_inset_depth, wall_thickness=m4_inset_wall, facade_thickness=m4_inset_facade);
         }
+
+        // Signature
+        color("yellow")
+        translate([-6, 82, 0])
+        scale([0.07, 0.07, 1])
+        rotate([0, 0, -90])
+        linear_extrude(height=bracket_height+0.55, center=false)
+        import("celeste.svg", center=false);
     }
 
     // Tevo through holes

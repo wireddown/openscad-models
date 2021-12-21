@@ -9,10 +9,14 @@
 
 // Globals
 
-$fn = 8 * 12;
+use <spool-spinner-v4top.scad>
+
+$fn = 0.3 * 360;
 eps = 0.01;
 
-base_diameter = 170;
+//base_diameter = 170;
+base_diameter = 200;
+base_radius   = base_diameter / 2;
 base_height   = 10;
 
 post_diameter = 60;
@@ -28,14 +32,14 @@ recess_height = 30;
 recess_zbase = base_height - recess_height;
 
 notch_diameter = 13;
-notch_height   = 3.6;
+notch_radius   = notch_diameter / 2;
+notch_height   = 5;
 notch_zbase    = base_height - notch_height;
 notch_length   = 30;
 notch_per_rotation = 8;
 notch_rotation_angle = 360 / notch_per_rotation;
 notch_offset_angle = notch_rotation_angle / 2;
-
-notch_inset = base_diameter/2 - notch_diameter/2;
+notch_inset = base_radius - notch_radius;
 
 // Functions
 
@@ -53,7 +57,9 @@ module notch(h, d, l)
 
 // Objects
 
-*rotate(45) translate([50, 0, 0 ]) notch(notch_height, notch_diameter, notch_length);
+*translate([0, 0, 20])
+spinner_top();
+
 
 difference()
 {
@@ -74,9 +80,9 @@ difference()
         cylinder(h=hole_height+2*eps, d=hole_diameter);
     }
 
-    translate([0, 0, recess_diameter-recess_height+8])
+    translate([0, 0, recess_diameter-recess_height+58])
     {
-        sphere(recess_diameter);
+        sphere(1.7*recess_diameter);
     }
 
     translate([0, 0, recess_zbase-eps])
@@ -94,7 +100,8 @@ difference()
     for(notch_angle = [notch_offset_angle:notch_rotation_angle:360+notch_offset_angle])
     {
         rotate(notch_angle)
-        translate([base_diameter/2+10, 0, 1-base_diameter/2])
-        sphere(base_diameter/2, $fn=120);
+        translate([base_radius+5, 0, 1-base_radius])
+        sphere(base_radius, $fn=$fn);
     }
 }
+

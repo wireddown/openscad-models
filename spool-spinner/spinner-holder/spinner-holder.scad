@@ -46,7 +46,8 @@ module notch(h, d, l)
     hull()
     {
         cylinder(h=h, d=d);
-        translate([l, 0, 0]) cylinder(h=h, d=d);
+        translate([l, 0, 0])
+            cylinder(h=h, d=d);
     }
 }
 
@@ -60,21 +61,22 @@ difference()
     {
         cylinder(h=base_height, d=base_diameter);
         translate([0, 0, post_zbase])
-        {
             hull()
             {
-                translate([0, 0, post_height])
-                {
-                    cylinder(h=eps, d=base_diameter);
-                }
                 cylinder(h=eps, d=post_diameter);
+                translate([0, 0, post_height])
+                    cylinder(h=eps, d=base_diameter);
             }
-        }
     }
 
     translate([0, 0, hole_zbase-eps])
     {
         cylinder(h=hole_height+2*eps, d=hole_diameter);
+    }
+
+    translate([0, 0, recess_diameter-recess_height+8])
+    {
+        sphere(recess_diameter);
     }
 
     translate([0, 0, recess_zbase-eps])
@@ -92,7 +94,7 @@ difference()
     for(notch_angle = [notch_offset_angle:notch_rotation_angle:360+notch_offset_angle])
     {
         rotate(notch_angle)
-        translate([notch_inset, 0, -notch_height])
-        notch(notch_height, notch_diameter, notch_length/2);
+        translate([base_diameter/2+10, 0, 1-base_diameter/2])
+        sphere(base_diameter/2, $fn=120);
     }
 }

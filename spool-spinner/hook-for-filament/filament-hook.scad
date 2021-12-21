@@ -58,6 +58,7 @@ module spiral2d(r, thickness, height, loops, skip_first=true)
 {
     if (skip_first)
     {
+        //   BUGGY AF   //
         translate([-0.5*r, 0.5*r, 0])
             cylinder(h=height, r=3.6*r);
     }
@@ -90,6 +91,7 @@ union()
 {
     difference()
     {
+        // Create
         union()
         {
             color("orange")
@@ -114,12 +116,14 @@ union()
             }
         }
 
+        // Cut
         {
             color("red")
-            translate([0, 0, 0.4])
+            translate([0, 0, 1.70])
             {
                 // Anchor stand-in
-                translate([0, 0, 1*eps])
+                translate([0.1, 0, 0])
+                scale([0.99, 0.98, 1])
                 import("anchor-for-spool-spinner-filament-hook-v1.stl");
 
                 // Bracket stand-in
@@ -167,8 +171,8 @@ union()
             {
                 // Hook
                 color("blue")
-                translate([0, 6, 21])
-                rotate([90, -165, 0])
+                translate([-2, -6, 21])
+                rotate([90, -165, 180])
                 {
                     spiral2d(r=1, thickness=2, height=12, loops=1.72);
                     spiral2d(r=11, thickness=4, height=12, loops=0.62, skip_first=false);
@@ -179,16 +183,15 @@ union()
                 translate([0, 0, 10])
                 rotate([0, 90, 0])
                 {
-                    translate([-3.1, 0, -1])
-                    half_torus(r=3.25, thickness=[5, 8.2]);
+                    translate([-2.1, 0, -1.0])
+                    scale([1, 1, 1.5])
+                    half_torus(r=3.25, thickness=[5, 5]);
 
-                    translate([-17, 0, -1.4])
+                    translate([-16, 0, -3.6])
                     rotate([0, -195, 0])
                     half_torus(r=3.5, thickness=[4, 6]);
                 }
-
             }
         }
-
     }
 }

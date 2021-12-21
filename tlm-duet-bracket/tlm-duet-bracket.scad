@@ -4,220 +4,171 @@
 //     *             disable
 //     !             show only
 //     #             highlight / debug
-//     %             enable alpha
+//     %             enable alpha channel
 // http://www.openscad.org/cheatsheet/index.html
 
-include <MCAD/nuts_and_bolts.scad>;
+include <BOSL/constants.scad>    // https://github.com/revarbat/BOSL/wiki/constants.scad
+include <MCAD/materials.scad>    // https://github.com/openscad/MCAD/blob/master/materials.scad#L8
+use <BOSL/masks.scad>
+use <BOSL/math.scad>
+use <BOSL/metric_screws.scad>
+use <BOSL/shapes.scad>           // https://github.com/revarbat/BOSL/wiki/shapes.scad
+use <BOSL/transforms.scad>       // https://github.com/revarbat/BOSL/wiki/transforms.scad
 
 // Globals
 
 convexity = 4;
-number_of_fragments = 0.30 * 360;
-eps = 0.001;
+number_of_fragments = 0.5 * 360;
+eps = 0.0002;
 
 $fn = number_of_fragments;
 
-// Parameters
+hole_factor = 1.06;
+no_head = 0;
+chamfer = 1.5;
 
-bracket_height  = 3;
-bracket_width   = 13;
-
-m3_pass_thru    = 3 + 0.70;
-
+m3              = 3;
 m4              = 4;
-m4_nut_diameter = 7.5 + 0.50;
-m4_inset_depth  = 6;
-m4_inset_wall   = 2.75;
-m4_inset_facade = 3;
 
-tevo_width  = 87;
-tevo_length = 138;
-
-duet_width  = 92;
-duet_length = 115;
-
-width_offset = abs(tevo_width-duet_width) / 2;
-duet_offset  = 10;
 
 // Functions
 
 // Modules
 
-module notch(height, diameter, length)
+module notch(height, diameter, length, fn=$fn)
 {
     hull()
     {
-        cylinder(h=height, d=diameter);
+        cylinder(h=height, d=diameter, $fn=fn, center=true);
+
         translate([length, 0, 0])
-            cylinder(h=height, d=diameter);
+        cylinder(h=height, d=diameter, $fn=fn, center=true);
     }
 }
 
-module tube(outer_diameter, inner_diameter, length)
+module hex_notch(height, diameter, length)
 {
-    difference()
-    {
-        color("red")
-        union()
-        {
-            cylinder(d=outer_diameter, h=length);
-        }
-
-        color("blue")
-        union()
-        {
-            scale([1, 1, 1.1])
-            translate([0, 0, -eps])
-            cylinder(d=inner_diameter, h=length);
-        }
-    }
+    notch(height, diameter, length, fn=6);
 }
 
-module duct(outer_xsize, outer_ysize,
-            inner_xsize, inner_ysize,
-            length)
+module duet2_loft_for_smoothieboard_holes(
+    frame_width = 10,
+    loft_thickness = 5,
+    duet2_ymove = 0,
+    duet2_standoff_height = 5
+)
+let(
+    smoothie_hole_xspan   =  87,
+    smoothie_hole_yspan   = 138,
+    duet2_hole_xspan      =  92,
+    duet2_hole_yspan      = 115,
+    loft_x = max(smoothie_hole_xspan, duet2_hole_xspan),
+    loft_y = max(smoothie_hole_yspan, duet2_hole_yspan),
+    frame_edges = EDGES_BOTTOM + EDGES_Z_ALL,
+    smoothie_hole         = m3,
+    smoothie_hole_cut     = 2 * loft_thickness,
+    duet2_hole            = m4,
+    duet2_standoff_length = 12,
+    duet2_standoff_width  = min(max(2 * duet2_hole, 8), frame_width),
+    m4_nut_height         = 4,
+    m4_nut_minor          = 6.7
+)
+difference()
 {
-    difference()
+    // Frame
+    color("LawnGreen")
+    union()
     {
-        color("red")
-        union()
-        {
-            cube([outer_xsize, outer_ysize, length]);
-        }
+        xspread(loft_x)
+        cuboid(
+            size = [frame_width, loft_y + frame_width, loft_thickness],
+            chamfer = chamfer,
+            edges = frame_edges
+        );
 
-        color("blue")
-        scale([1, 1, 1.1])
-        translate([
-            (outer_xsize-inner_xsize)/2,
-            (outer_ysize-inner_ysize)/2,
-            -eps
-        ])
-        union()
-        {
-            cube([inner_xsize, inner_ysize, length]);
-        }
+        yspread(loft_y)
+        cuboid(
+            size = [loft_x + frame_width, frame_width, loft_thickness],
+            chamfer = chamfer,
+            edges = frame_edges
+        );
+
+        // Standoff
+        xspread(duet2_hole_xspan)
+        yspread(duet2_hole_yspan)
+        zmove(0.5 * loft_thickness)
+        cuboid(
+            size = [duet2_standoff_width,
+                    duet2_standoff_length,
+                    duet2_standoff_height],
+            fillet = 1,
+            edges = EDGES_TOP + EDGES_Z_ALL,
+            align = V_UP);
     }
-}
 
-module hex_hole(metric_size, height=-1)
-{
-    z_size = (height == -1)
-        ? METRIC_NUT_THICKNESS[metric_size]
-        : height;
+    // Round corners
+    color("Fuchsia")
+    xspread(loft_x + frame_width)
+    yspread(loft_y + frame_width)
+    fillet_mask_z(
+        l = loft_thickness,
+        r = 0.5 * frame_width,
+        align = ALIGN_CENTER
+    );
 
-    // These are too large for my set
-    //let (diameter = METRIC_NUT_AC_WIDTHS[metric_size])
-    let (diameter = m4_nut_diameter)
+    // Smoothieboard holes
+    color(Brass)
+    xspread(smoothie_hole_xspan)
+    yspread(smoothie_hole_yspan)
+    cyl(
+        h = smoothie_hole_cut,
+        d = smoothie_hole);
+
+    // Duet2 WiFi holes
+    ymove(duet2_ymove)
+    xflip_copy(offset = -0.5 * duet2_hole_xspan)
+    yspread(duet2_hole_yspan)
     {
-        cylinder(d=diameter, h=z_size, $fn=6);
-    }
-}
+        color(Steel)
+        cyl(
+            h = 2 * (loft_thickness + duet2_standoff_height),
+            d = duet2_hole);
 
-module hexnut_inset(
-    metric_size,
-    height=-1,
-    wall_thickness=2.0,
-    facade_thickness=2)
-{
-    z_size = (height == -1)
-        ? METRIC_NUT_THICKNESS[metric_size]
-        : height;
-
-    let (diameter = m4_nut_diameter,
-         apothemD = METRIC_BOLT_CAP_DIAMETERS[metric_size]-1)
-    {
-        union()
-        {
-            translate([0, 0, z_size-facade_thickness])
-            tube(outer_diameter=diameter + wall_thickness, inner_diameter=apothemD, length=facade_thickness);
-
-            difference()
-            {
-                cylinder(d=diameter + wall_thickness, h=z_size);
-                translate([0, 0, eps])
-                hex_hole(metric_size, z_size);
-            }
-        }
+        // Hex nut slide-in slots
+        color("Fuchsia")
+        yscale(1.1)
+        zmove(0.5 * abs(m4_nut_height - loft_thickness))
+        hex_notch(
+            height = m4_nut_height,
+            diameter = m4_nut_minor,
+            length = frame_width);
     }
 }
 
 // Objects
 
 //projection(cut=true) translate([0, 0, -1])
-difference()
+//zrot($t * 90)
+let(
+    bracket_width       = 13,
+    bracket_thickness   = 3,
+    svg_scale           = 0.07,
+    signature_thickness = 1.0
+)
+union()
 {
-    union()
-    {
-        // Frame
-        color("darkblue")
-        {
-            notch(height=bracket_height, diameter=bracket_width, length=tevo_length);
+    duet2_loft_for_smoothieboard_holes(
+        frame_width     = bracket_width,
+        loft_thickness  = bracket_thickness
+    );
 
-            translate([0, duet_width, 0])
-            notch(height=bracket_height, diameter=bracket_width, length=tevo_length);
-            
-            rotate([0, 0, 90])
-            notch(height=bracket_height, diameter=bracket_width, length=duet_width);
-
-            translate([tevo_length, 0, 0])
-            rotate([0, 0, 90])
-            notch(height=bracket_height, diameter=bracket_width, length=duet_width);
-        }
-
-        // M4 insets
-        color("teal")
-        translate([duet_offset, 0, bracket_height-eps])
-        {
-            hexnut_inset(metric_size=m4, height=m4_inset_depth, wall_thickness=m4_inset_wall, facade_thickness=m4_inset_facade);
-
-            translate([0, duet_width, 0])
-            hexnut_inset(metric_size=m4, height=m4_inset_depth, wall_thickness=m4_inset_wall, facade_thickness=m4_inset_facade);
-
-            translate([duet_length, duet_width, 0])
-            hexnut_inset(metric_size=m4, height=m4_inset_depth, wall_thickness=m4_inset_wall, facade_thickness=m4_inset_facade);
-
-            translate([duet_length, 0, 0])
-            hexnut_inset(metric_size=m4, height=m4_inset_depth, wall_thickness=m4_inset_wall, facade_thickness=m4_inset_facade);
-        }
-
-        // Signature
-        color("yellow")
-        translate([-6, 82, 0])
-        scale([0.07, 0.07, 1])
-        rotate([0, 0, -90])
-        linear_extrude(height=bracket_height+0.55, center=false)
-        import("celeste.svg", center=false);
-    }
-
-    // Tevo through holes
-    color("magenta")
-    translate([0, width_offset, -15])
-    {
-        cylinder(d=m3_pass_thru, h=30);
-
-        translate([0, tevo_width, 0])
-        cylinder(d=m3_pass_thru, h=30);
-
-        translate([tevo_length, tevo_width, 0])
-        cylinder(d=m3_pass_thru, h=30);
-
-        translate([tevo_length, 0, 0])
-        cylinder(d=m3_pass_thru, h=30);
-    }
-
-    // M4 nut back cuts
-    color("magenta")
-    translate([duet_offset, 0, -eps])
-    {
-        hex_hole(metric_size=m4);
-
-        translate([0, duet_width, 0])
-        hex_hole(metric_size=m4);
-
-        translate([duet_length, duet_width, 0])
-        hex_hole(metric_size=m4);
-
-        translate([duet_length, 0, 0])
-        hex_hole(metric_size=m4);
-    }
+    // Signature
+    color("yellow")
+    xscale(svg_scale)
+    yscale(svg_scale)
+    zmove(0.5 * signature_thickness)
+    linear_extrude(
+        height = bracket_thickness + signature_thickness,
+        center = true)
+    import("hen-on-ringed-planet.svg", center = true);
 }

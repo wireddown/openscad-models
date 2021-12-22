@@ -70,11 +70,12 @@ difference()
 {
     hull()
     {
+        zmove(-1)
         xspread(40)
-        cyl(r=3, h=4);
+        cyl(r=4, h=6);
 
         ymove(45/2-19)
-        zmove(10)
+        zmove(11)
         xspread(8)
         yspread(3)
         cyl(r=3, h=1);
@@ -85,52 +86,65 @@ difference()
 
 module fan_arch()
 {
-    zmove(-2)
+    zmove(-4)
     ymove(1)
     xscale(1.25)
-    ycyl(r=10, h=15);
+    ycyl(r=13, h=15);
 }
 
 *fan_adapter();
+
 
 //intersection()
 {
     difference()
     {
-        zrot_copies([0, 90])
-        yflip_copy(offset=20)
-        fan_adapter();
+        union()
+        {
+            zmove(4)
+            zrot_copies([0, 90])
+            yflip_copy(offset=20)
+            fan_adapter();
+
+            // Top side 5010 box fan bolt flat-top
+            zmove(7)
+            box_fan_holes(pass_diameter=6,
+                          spacing=40,
+                          height=2);
+        }
 
         // 4010 box fan clearance
         cyl(r=22, h=10.1, fillet=3);
 
         // 4010 box fan clearance
         zrot(45)
-        zmove(3)
+        zmove(6.5)
         xscale(1.02)
         yscale(1.02)
-        box_fan_volume(side=40, height=10);
+        box_fan_volume(side=40, height=13);
 
         // 4010 box fan mounting holes
         zrot(45)
-        box_fan_holes(pass_diameter=3.2,
+        box_fan_holes(pass_diameter=4.0,
                       spacing=32,
                       height=40);
 
-        // 5010 box fan mounting holes
-        box_fan_holes(pass_diameter=3.2,
+        // 5010 box fan mounting post counter sinks
+        zmove(2)
+        box_fan_holes(pass_diameter=5.4,
+                      spacing=40,
+                      height=4);
+
+        // Top side 5010 box fan bolt flat top
+        zmove(9)
+        box_fan_holes(pass_diameter=6.0,
+                      spacing=40,
+                      height=2);
+
+        // 5010 box fan through holes
+        zmove(4)
+        box_fan_holes(pass_diameter=4.0,
                       spacing=40,
                       height=10);
-
-        // Counter-sink
-        zmove(4)
-        box_fan_holes(pass_diameter=6.2,
-                      spacing=40,
-                      height=5);
     }
 }
-
-// Next steps:
-//  - larger m3 pass through ~ 4.0
-//  - maybe taller bracket?
-//  - 

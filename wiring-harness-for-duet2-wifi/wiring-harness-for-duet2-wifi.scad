@@ -37,73 +37,156 @@ module notch(height, diameter, length)
 
 // Objects
 
-module harness_riser(
+module harness_riser_with_pcb_brackets(
     height,
     length,
     width,
     thickness,
     metric_size,
     center_distance,
-    smoother_count,
+    bracket_length,
+    bracket_width,
+    bracket_thickness,
+    bracket_metric_size,
+    bracket_center_distance,
+    bracket_count,
     bracket_angle
 )
 {
     let (
-        bolt_factor = 1.25,
+        bolt_factor = 1.1,
         hole_size = metric_size * bolt_factor,
-        hole_margin = hole_size+3
+        no_head = 0,
+        hole_shoulder = 2.8 + thickness,
+        hole_margin = hole_size + 3,
+        hole_count = 2,
+        chamfer = 0.5,
+        bracket_spacing = 25,
+        bracket_offset = 10
     )
     difference()
     {
-        color("yellowgreen")
         union()
         {
-            cuboid(
-                size = [width, length, height],
-                chamfer = 0.5
-            );
+            // Main body
+            color("yellowgreen")
+            difference()
+            {
+                union()
+                {
+                    // Frame
+                    cuboid(
+                        size = [width, length, height],
+                        chamfer = chamfer
+                    );
 
-            yspread(
-                spacing = 25,
-                n = smoother_count
-            )
-            up(height/2 + smoother_length/2 - abs(sin(bracket_angle)) - thickness - 0.5)
-            ymove(10)
-            xrot(bracket_angle)
-            smoother_bracket(
-                smoother_length,
-                smoother_width,
-                smoother_thickness,
-                smoother_metric_size,
-                smoother_center_distance
-            );
-        }
+                    // Brackets
+                    yspread(
+                        spacing = bracket_spacing,
+                        n = bracket_count
+                    )
+                    up((height + bracket_length) / 2 - abs(sin(bracket_angle)) - thickness - chamfer)
+                    ymove(bracket_offset)
+                    xrot(bracket_angle)
+                    smoother_bracket(
+                        bracket_length,
+                        bracket_width,
+                        bracket_thickness,
+                        bracket_metric_size,
+                        bracket_center_distance
+                    );
+                }
 
-        color("honeydew")
-        union()
-        {
-            // Cut the main hole
-            cuboid(
-                size = [width+1, length-2*thickness, height-2*thickness],
-                chamfer = 0.5
-            );
+                color("honeydew")
+                union()
+                {
+                    // Cut the main hole
+                    cuboid(
+                        size = [
+                            width + 1,
+                            length - 2 * thickness,
+                            height - 2 * thickness],
+                        chamfer = chamfer
+                    );
 
-            // Cut the bottom side
-            down((height-thickness)/2)
-            cuboid(
-                size = [width+1, center_distance-hole_margin, thickness+1]
-            );
+                    // Cut the bottom side
+                    down((height-thickness)/2)
+                    cuboid(
+                        size = [
+                            width + 1,
+                            center_distance - hole_margin,
+                            thickness + 1]
+                    );
+                }
+            }
 
-            // Cut the mounting holes
-            down(height/2 - thickness)
+            // Add supporting struts
+            color("aquamarine")
+            {
+                // Beneath
+                up(height/2 - thickness)
+                zflip()
+                narrowing_strut(
+                    w = width - 0 * chamfer,
+                    l = length - 2 * thickness,
+                    wall = 0,
+                    ang = 60
+                );
+
+                // Above
+                up(height/2)
+                narrowing_strut(
+                    w = width - 2 * chamfer,
+                    l = length - 2 * chamfer,
+                    wall = 0,
+                    ang = 70
+                );
+
+                // Sides
+                for (y_pos = [
+                    -length/2 + thickness,
+                    length/2 - thickness,
+                ])
+                {
+                    ymove(y_pos)
+                        xrot(sign(y_pos)*90)
+                        narrowing_strut(
+                            w = width,
+                            l = height - 2 * thickness,
+                            wall = 0,
+                            ang = 60
+                        );
+                }
+            }
+
+            // Add hole sholders
+            color("greenyellow")
+            down(height/2 + thickness + chamfer - hole_shoulder)
             yspread(
                 spacing = center_distance,
-                n = 2
+                n = hole_count
+            )
+            {
+                cuboid(
+                    size = [width, width, hole_shoulder],
+                    chamfer = chamfer
+                );
+            }
+        }
+
+        color("lavender")
+        union()
+        {
+            // Cut the mounting holes
+            down(height/2 - hole_shoulder)
+            yspread(
+                spacing = center_distance,
+                n = hole_count
             )
             screw(
                 screwsize = hole_size,
-                screwlen = 2*thickness,
-                headlen = 0
+                screwlen = thickness + hole_shoulder,
+                headlen = no_head
             );
         }
     }
@@ -118,33 +201,53 @@ module smoother_bracket(
 )
 {
     let (
-        bolt_factor = 1.25,
-        hole_size = metric_size * bolt_factor
+        chamfer = 0.5,
+        bolt_factor = 1.1,
+        hole_size = metric_size * bolt_factor,
+        hole_shoulder = 2.8 + thickness,
+        hole_count = 2,
+        no_head = 0,
+        spacing = center_distance,
+        starting_point = [0, -length/2 + hole_size, 0]
     )
     difference()
     {
         color("deepskyblue")
         union()
         {
+            // Bracket
             cuboid(
                 size = [width, length, thickness],
-                chamfer = 0.5
+                chamfer = chamfer
+            );
+
+            // Hole shoulder
+            up((hole_shoulder - thickness) / 2)
+            yspread(
+                spacing,
+                n = hole_count,
+                sp = starting_point
+            )
+            cuboid(
+                size = [width, width, hole_shoulder],
+                chamfer = chamfer
             );
         }
 
         color("lightcyan")
         union()
         {
-            up(thickness)
+            // Holes
+            up(hole_shoulder)
             yspread(
-                spacing = center_distance,
-                n = 2,
-                sp = [0, -length/2 + hole_size, 0]
+                spacing,
+                n = hole_count,
+                sp = starting_point
             )
             screw(
                 screwsize = hole_size,
-                screwlen = 2*thickness,
-                headlen = 0
+                screwlen = thickness + hole_shoulder,
+                headlen = no_head
             );
         }
     }
@@ -164,16 +267,45 @@ smoother_length = 33;
 smoother_width = riser_width;
 smoother_thickness = riser_thickness;
 
-harness_riser(
+pt100_center_distance = 20;
+pt100_metric_size = 2.5;
+pt100_length = 31;
+pt100_width = riser_width;
+pt100_thickness = riser_thickness;
+
+harness_riser_with_pcb_brackets(
     riser_height,
     riser_length,
     riser_width,
     riser_thickness,
     riser_metric_size,
     riser_center_distance,
-    smoother_count = 4,
-    bracket_angle=-60
+    smoother_length,
+    smoother_width,
+    smoother_thickness,
+    smoother_metric_size,
+    smoother_center_distance,
+    bracket_count = 4,
+    bracket_angle = -60
 );
+
+xmove(90)
+harness_riser_with_pcb_brackets(
+    riser_height,
+    riser_length,
+    riser_width,
+    riser_thickness,
+    riser_metric_size,
+    riser_center_distance,
+    pt100_length,
+    pt100_width,
+    pt100_thickness,
+    pt100_metric_size,
+    pt100_center_distance,
+    bracket_count = 1,
+    bracket_angle = -60
+);
+
 
 *smoother_bracket(
     smoother_length,

@@ -92,22 +92,40 @@ module circuit_board_holes(diameter1, diameter2, height)
             align = V_RIGHT + V_UP
         );
 
-        zmove(base_thickness)
+        color("black")
         {
-        xmove(usb_offset)
-        yspread(20)
-        cuboid(usb_size, align = V_RIGHT + V_UP);
+            zmove(base_thickness)
+            {
+            xmove(usb_offset)
+            yspread(20)
+            cuboid(usb_size, align = V_RIGHT + V_UP);
 
-        xmove(top_offset)
-        cuboid(top_size, align = V_RIGHT + V_UP);
+            xmove(top_offset)
+            cuboid(top_size, align = V_RIGHT + V_UP);
 
-        xmove(cnxr_offset)
-        cuboid(cnxr_size, align = V_RIGHT + V_UP);
+            xmove(cnxr_offset)
+            cuboid(cnxr_size, align = V_RIGHT + V_UP);
+            }
+
+            xmove(bottom_offset)
+            cuboid(bottom_size, align = V_RIGHT + V_DOWN);
         }
-
-        xmove(bottom_offset)
-        cuboid(bottom_size, align = V_RIGHT + V_DOWN);
     }
 
     circuit_board_holes(diameter1 = sm_hole_id, diameter2 = hole_id, height = 25);
+}
+
+let(
+    case_thickness = 4 * 0.6,
+    case_height = 0 + usb_size[2]+base_thickness+bottom_size[2],
+    case_length = base_length+10
+)
+zmove((usb_size[2]+base_thickness-bottom_size[2])/2)
+xmove(base_length/2-4)
+{
+    xspread(case_length)
+    cuboid(size=[case_thickness, base_width, case_height]);
+
+    yspread(base_width)
+    cuboid(size=[case_length, case_thickness, case_height]);
 }

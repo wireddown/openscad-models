@@ -64,8 +64,11 @@ difference()
     {
         hull()
         xmove(base_width/2)
-        xspread(base_width-2*1.2)
-        yspread(base_length-2*1.2)
+        place_copies(0.5 * [
+            [base_width-2*1.2, base_length-2*1.2-15, 0], [base_width-2*1.2, -(base_length-2*1.2-15), 0],
+            [-(base_width-2*1.2), base_length-2*1.2, 0], [-(base_width-2*1.2), -(base_length-2*1.2), 0],
+            [base_width-2*1.2-55, base_length-2*1.2, 0], [base_width-2*1.2-55, -(base_length-2*1.2), 0]
+        ])
         cyl(r=1.2, h=base_tickness, align=V_UP);
 
         xmove(fin_offset)
@@ -82,6 +85,12 @@ difference()
         yspread(12, n=3)
         hull()
         xspread(40)
+        cyl(r = 2, h = post_height - base_tickness, align = V_UP);
+
+        xmove(base_width/2)
+        xspread(20)
+        hull()
+        yspread(30)
         cyl(r = 2, h = post_height - base_tickness, align = V_UP);
     }
 

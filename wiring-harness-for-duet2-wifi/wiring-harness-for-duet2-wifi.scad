@@ -44,6 +44,7 @@ module harness_riser_with_pcb_brackets(
     thickness,
     metric_size,
     center_distance,
+    hole_offset,
     bracket_length,
     bracket_width,
     bracket_thickness,
@@ -161,6 +162,7 @@ module harness_riser_with_pcb_brackets(
 
             // Add hole sholders
             color("greenyellow")
+            right((hole_offset + chamfer) / 2)
             down(height/2 + thickness + chamfer - hole_shoulder)
             yspread(
                 spacing = center_distance,
@@ -168,7 +170,7 @@ module harness_riser_with_pcb_brackets(
             )
             {
                 cuboid(
-                    size = [width, width, hole_shoulder],
+                    size = [width + hole_size + hole_shoulder + chamfer, width, hole_shoulder],
                     chamfer = chamfer
                 );
             }
@@ -178,16 +180,23 @@ module harness_riser_with_pcb_brackets(
         union()
         {
             // Cut the mounting holes
+            right(hole_offset)
             down(height/2 - hole_shoulder)
             yspread(
                 spacing = center_distance,
                 n = hole_count
             )
-            screw(
-                screwsize = hole_size,
-                screwlen = thickness + hole_shoulder,
-                headlen = no_head
-            );
+            {
+                screw(
+                    screwsize = hole_size,
+                    screwlen = thickness + hole_shoulder,
+                    headlen = no_head
+                );
+
+                //cuboid(
+                //    size = [width, width + 1, hole_shoulder + thickness - 2*chamfer]
+                //);
+            }
         }
     }
 }
@@ -256,6 +265,7 @@ module smoother_bracket(
 
 riser_center_distance = 115;
 riser_metric_size = 4;
+riser_hole_offset = 10;
 riser_length = riser_center_distance + 20;
 riser_width = 8;
 riser_thickness = 2;
@@ -280,6 +290,7 @@ harness_riser_with_pcb_brackets(
     riser_thickness,
     riser_metric_size,
     riser_center_distance,
+    riser_hole_offset,
     smoother_length,
     smoother_width,
     smoother_thickness,
@@ -297,6 +308,7 @@ harness_riser_with_pcb_brackets(
     riser_thickness,
     riser_metric_size,
     riser_center_distance,
+    -1 * riser_hole_offset,
     pt100_length,
     pt100_width,
     pt100_thickness,

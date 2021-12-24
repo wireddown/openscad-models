@@ -19,108 +19,9 @@ $fn = number_of_fragments;
 
 // Parameters
 
-
 // Functions
 
 // Modules
-
-module notch(height, diameter, length)
-{
-    hull()
-    {
-        cylinder(h=height, d=diameter);
-        translate([length, 0, 0])
-            cylinder(h=height, d=diameter);
-    }
-}
-
-/* module tube(outer_diameter, inner_diameter, length)
-{
-    difference()
-    {
-        color("red")
-        union()
-        {
-            cylinder(d=outer_diameter, h=length);
-        }
-
-        color("blue")
-        union()
-        {
-            scale([1, 1, 1.1])
-            translate([0, 0, -eps])
-            cylinder(d=inner_diameter, h=length);
-        }
-    }
-} */
-
-module duct(outer_xsize, outer_ysize,
-            inner_xsize, inner_ysize,
-            length)
-{
-    difference()
-    {
-        color("red")
-        union()
-        {
-            cube([outer_xsize, outer_ysize, length]);
-        }
-
-        color("blue")
-        scale([1, 1, 1.1])
-        translate([
-            (outer_xsize-inner_xsize)/2,
-            (outer_ysize-inner_ysize)/2,
-            -eps
-        ])
-        union()
-        {
-            cube([inner_xsize, inner_ysize, length]);
-        }
-    }
-}
-
-module hex_hole(metric_size, height=-1)
-{
-    z_size = (height == -1)
-        ? METRIC_NUT_THICKNESS[metric_size]
-        : height;
-
-    // These are too large for my set
-    //let (diameter = METRIC_NUT_AC_WIDTHS[metric_size])
-    let (diameter = m4_nut_diameter)
-    {
-        cylinder(d=diameter, h=z_size, $fn=6);
-    }
-}
-
-module hexnut_inset(
-    metric_size,
-    height=-1,
-    wall_thickness=2.0,
-    facade_thickness=2)
-{
-    z_size = (height == -1)
-        ? METRIC_NUT_THICKNESS[metric_size]
-        : height;
-
-    let (diameter = m4_nut_diameter,
-         apothemD = METRIC_BOLT_CAP_DIAMETERS[metric_size]-1)
-    {
-        union()
-        {
-            translate([0, 0, z_size-facade_thickness])
-            tube(outer_diameter=diameter + wall_thickness, inner_diameter=apothemD, length=facade_thickness);
-
-            difference()
-            {
-                cylinder(d=diameter + wall_thickness, h=z_size);
-                translate([0, 0, eps])
-                hex_hole(metric_size, z_size);
-            }
-        }
-    }
-}
 
 module ziptie_tube_coupler(
     width,
@@ -237,10 +138,5 @@ difference()
                 top_tube_height=t,
                 chamfer_lower_edge=c);
         }
-
-    }
-
-    color("magenta")
-    {
     }
 }

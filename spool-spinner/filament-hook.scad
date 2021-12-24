@@ -122,9 +122,9 @@ union()
             translate([0, 0, 1.70])
             {
                 // Anchor stand-in
-                translate([0.1, 0, 0])
+                *translate([0.1, 0, 0])
                 scale([0.99, 0.98, 1])
-                import("anchor-for-spool-spinner-filament-hook-v1.stl");
+                import("hook-anchor.stl");
 
                 // Bracket stand-in
                 translate([-33.1, 0, 0])

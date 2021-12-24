@@ -12,7 +12,6 @@
 $fn = 0.3 * 360;
 eps = 0.01;
 
-//base_diameter = 200;
 base_diameter = 170;
 base_radius   = base_diameter / 2;
 base_height   = 10;
@@ -30,7 +29,6 @@ notch_zbase    = 0;
 notch_length   = 30;
 notch_per_rotation = 8;
 notch_rotation_angle = 360 / notch_per_rotation;
-notch_offset_angle = notch_rotation_angle / 2;
 notch_inset = base_radius - notch_radius;
 
 // Functions

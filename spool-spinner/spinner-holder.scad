@@ -9,12 +9,9 @@
 
 // Globals
 
-use <spool-holder.scad>
-
 $fn = 0.3 * 360;
 eps = 0.01;
 
-//base_diameter = 170;
 base_diameter = 200;
 base_radius   = base_diameter / 2;
 base_height   = 10;
@@ -56,10 +53,6 @@ module notch(h, d, l)
 }
 
 // Objects
-
-*translate([0, 0, 20])
-spinner_top();
-
 
 difference()
 {
@@ -104,4 +97,3 @@ difference()
         sphere(base_radius, $fn=$fn);
     }
 }
-

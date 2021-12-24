@@ -71,8 +71,4 @@ difference()
     translate([0, 0, washer_height])
     scale([1, 1, 1.1])
     washer(2*outer_diameter, inner_diameter-0.44, flange_height);
-
-    *translate([0, 0, -eps])
-    scale([1, 1, 1.1])
-    washer(2*outer_diameter, outer_diameter, washer_height);
 }

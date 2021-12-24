@@ -15,7 +15,7 @@ use <BOSL/metric_screws.scad>
 use <BOSL/shapes.scad>
 use <BOSL/transforms.scad>
 
-use <combined.scad>
+use <rpi-camera-parts-combined.scad>
 
 // Globals
 

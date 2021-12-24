@@ -23,8 +23,6 @@ eps = 0.0002;
 
 $fn = number_of_fragments;
 
-hole_factor = 1.06;
-no_head = 0;
 chamfer = 1.5;
 
 m3              = 3;
@@ -62,9 +60,9 @@ let(
     smoothie_hole_yspan   = 138,
     duet2_hole_xspan      =  92,
     duet2_hole_yspan      = 115,
-    loft_x = max(smoothie_hole_xspan, duet2_hole_xspan),
-    loft_y = max(smoothie_hole_yspan, duet2_hole_yspan),
-    frame_edges = EDGES_BOTTOM + EDGES_Z_ALL,
+    loft_x                = max(smoothie_hole_xspan, duet2_hole_xspan),
+    loft_y                = max(smoothie_hole_yspan, duet2_hole_yspan),
+    frame_edges           = EDGES_BOTTOM + EDGES_Z_ALL,
     smoothie_hole         = m3,
     smoothie_hole_cut     = 2 * loft_thickness,
     duet2_hole            = m4,
@@ -147,8 +145,6 @@ difference()
 
 // Objects
 
-//projection(cut=true) translate([0, 0, -1])
-//zrot($t * 90)
 let(
     bracket_width       = 13,
     bracket_thickness   = 3,

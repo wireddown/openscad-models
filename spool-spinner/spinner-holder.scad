@@ -9,7 +9,7 @@
 
 // Globals
 
-use <spool-spinner-v4top.scad>
+use <spool-holder.scad>
 
 $fn = 0.3 * 360;
 eps = 0.01;

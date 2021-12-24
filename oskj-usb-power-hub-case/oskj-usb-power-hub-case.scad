@@ -28,18 +28,6 @@ $fn = number_of_fragments;
 
 // Modules
 
-module hexnut_helper(height, length, diameter)
-let(
-    nut_path = path2d_regular_ngon(n=6, d=diameter)
-)
-{
-    hull()
-    {
-        linear_extrude(height) polygon(nut_path);
-        xmove(length) linear_extrude(height) polygon(nut_path);
-    }
-}
-
 // Objects
 
 m3_pass_diameter = 4;

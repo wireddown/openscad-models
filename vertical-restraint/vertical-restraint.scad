@@ -23,22 +23,11 @@ eps = 0.001;
 $fn = number_of_fragments;
 
 hole_factor = 1.1;
-no_head = 0;
 chamfer = 1.5;
 
 // Functions
 
 // Modules
-
-module notch(height, diameter, length)
-{
-    hull()
-    {
-        cylinder(h=height, d=diameter);
-        translate([length, 0, 0])
-            cylinder(h=height, d=diameter);
-    }
-}
 
 // Objects
 
@@ -232,11 +221,8 @@ module drive_cable_restraint(
         let(
             entrance_xmove = travel / 2
         )
-        //xmove((entrance_xmove+joiner_thickness/2))
         ymove(-restraint_ymove - width/2)
         ymove(2)
-        //zmove(gap + thickness/4)
-        //xmove(-1.4)
         zmove(bracket_thickness)
         zrot(30)
         narrowing_strut(
@@ -260,12 +246,12 @@ module drive_cable_restraint(
         ymove(10.5)
         zmove(-bracket_thickness / 2)
         {
-        cuboid(
-            size = [travel + 20, bracket_width / 2, 20]
-        );
-        zmove(-bracket_thickness / 2)
-        scale([1.282, 1, 1])
-        cyl(d = bracket_width, l = 2 * bracket_thickness);
+            cuboid(
+                size = [travel + 20, bracket_width / 2, 20]
+            );
+            zmove(-bracket_thickness / 2)
+            scale([1.282, 1, 1])
+            cyl(d = bracket_width, l = 2 * bracket_thickness);
         }
         
         *difference()

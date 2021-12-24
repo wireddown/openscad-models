@@ -25,16 +25,6 @@ $fn = number_of_fragments;
 
 // Modules
 
-module notch(height, diameter, length)
-{
-    hull()
-    {
-        cylinder(h=height, d=diameter);
-        translate([length, 0, 0])
-            cylinder(h=height, d=diameter);
-    }
-}
-
 // Objects
 
 module harness_riser_with_pcb_brackets(
@@ -89,7 +79,7 @@ module harness_riser_with_pcb_brackets(
                     up((height + bracket_length) / 2 - abs(sin(bracket_angle)) - thickness - chamfer)
                     ymove(bracket_offset)
                     xrot(bracket_angle)
-                    smoother_bracket(
+                    pcb_bracket(
                         bracket_length,
                         bracket_width,
                         bracket_thickness,
@@ -160,7 +150,7 @@ module harness_riser_with_pcb_brackets(
                 }
             }
 
-            // Add hole sholders
+            // Add hole shoulders
             color("greenyellow")
             right((hole_offset + chamfer) / 2)
             down(height/2 + thickness + chamfer - hole_shoulder)
@@ -192,16 +182,12 @@ module harness_riser_with_pcb_brackets(
                     screwlen = thickness + hole_shoulder,
                     headlen = no_head
                 );
-
-                //cuboid(
-                //    size = [width, width + 1, hole_shoulder + thickness - 2*chamfer]
-                //);
             }
         }
     }
 }
 
-module smoother_bracket(
+module pcb_bracket(
     length,
     width,
     thickness,
@@ -316,13 +302,4 @@ harness_riser_with_pcb_brackets(
     pt100_center_distance,
     bracket_count = 1,
     bracket_angle = -60
-);
-
-
-*smoother_bracket(
-    smoother_length,
-    smoother_width,
-    smoother_thickness,
-    smoother_metric_size,
-    smoother_center_distance
 );

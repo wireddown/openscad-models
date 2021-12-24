@@ -95,56 +95,53 @@ module fan_arch()
 *fan_adapter();
 
 
-//intersection()
+difference()
 {
-    difference()
+    union()
     {
-        union()
-        {
-            zmove(4)
-            zrot_copies([0, 90])
-            yflip_copy(offset=20)
-            fan_adapter();
-
-            // Top side 5010 box fan bolt flat-top
-            zmove(7)
-            box_fan_holes(pass_diameter=6,
-                          spacing=40,
-                          height=2);
-        }
-
-        // 4010 box fan clearance
-        cyl(r=22, h=10.1, fillet=3);
-
-        // 4010 box fan clearance
-        zrot(45)
-        zmove(6.5)
-        xscale(1.02)
-        yscale(1.02)
-        box_fan_volume(side=40, height=13);
-
-        // 4010 box fan mounting holes
-        zrot(45)
-        box_fan_holes(pass_diameter=4.0,
-                      spacing=32,
-                      height=40);
-
-        // 5010 box fan mounting post counter sinks
-        zmove(2)
-        box_fan_holes(pass_diameter=5.4,
-                      spacing=40,
-                      height=4);
-
-        // Top side 5010 box fan bolt flat top
-        zmove(9)
-        box_fan_holes(pass_diameter=6.0,
-                      spacing=40,
-                      height=2);
-
-        // 5010 box fan through holes
         zmove(4)
-        box_fan_holes(pass_diameter=4.0,
-                      spacing=40,
-                      height=10);
+        zrot_copies([0, 90])
+        yflip_copy(offset=20)
+        fan_adapter();
+
+        // Top side 5010 box fan bolt flat-top
+        zmove(7)
+        box_fan_holes(pass_diameter=6,
+                        spacing=40,
+                        height=2);
     }
+
+    // 4010 box fan clearance
+    cyl(r=22, h=10.1, fillet=3);
+
+    // 4010 box fan clearance
+    zrot(45)
+    zmove(6.5)
+    xscale(1.02)
+    yscale(1.02)
+    box_fan_volume(side=40, height=13);
+
+    // 4010 box fan mounting holes
+    zrot(45)
+    box_fan_holes(pass_diameter=4.0,
+                    spacing=32,
+                    height=40);
+
+    // 5010 box fan mounting post counter sinks
+    zmove(2)
+    box_fan_holes(pass_diameter=5.4,
+                    spacing=40,
+                    height=4);
+
+    // Top side 5010 box fan bolt flat top
+    zmove(9)
+    box_fan_holes(pass_diameter=6.0,
+                    spacing=40,
+                    height=2);
+
+    // 5010 box fan through holes
+    zmove(4)
+    box_fan_holes(pass_diameter=4.0,
+                    spacing=40,
+                    height=10);
 }

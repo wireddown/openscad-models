@@ -23,22 +23,11 @@ eps = 0.001;
 $fn = number_of_fragments;
 
 hole_factor = 1.1;
-no_head = 0;
 chamfer = 1.5;
 
 // Functions
 
 // Modules
-
-module notch(height, diameter, length)
-{
-    hull()
-    {
-        cylinder(h=height, d=diameter);
-        translate([length, 0, 0])
-            cylinder(h=height, d=diameter);
-    }
-}
 
 // Objects
 

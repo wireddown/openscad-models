@@ -159,13 +159,6 @@ module mounting_bracket(
             size = [width, length, thickness],
             chamfer = chamfer
         );
-        // scale([0.6, 1.1, 1])
-        // zrot(22.5)
-        // linear_extrude(thickness)
-        // polygon(path2d_regular_ngon(
-        //     n = 8,
-        //     d = length
-        // ));
 
         // Cut mounting holes
         let(
@@ -179,7 +172,6 @@ module mounting_bracket(
             color("orange")
             yspread(mounting_hole_yspread - mounting_hole_margin)
             xspread(alum2020_spacing)
-            //zmove(3)
             screw(
                 screwsize = hole_size,
                 screwlen = thickness,
@@ -191,20 +183,6 @@ module mounting_bracket(
 }
 
 *mounting_bracket(width=40, length=60, thickness=5, metric_size=4, spacing=20);
-
-module knob_anchor()
-{
-    difference()
-    {
-    import("snap-mount.stl");
-    
-    zmove(14)
-    cuboid(size=[29.54, 18, 36]);
-    }
-}
-
-*knob_anchor();
-
 
 // Products
 
@@ -225,7 +203,7 @@ module rpi0_cover()
             move(stl_offset)
             zspread(spacing = 0.1, n = 13)
             zrot(-90)
-            import("rpi0-top.stl");
+            import("upstream/rpi0-top.stl");
 
             move(svg_offset)
             zmove(-emboss_height)
@@ -233,7 +211,7 @@ module rpi0_cover()
                 color("darkviolet")
                 linear_extrude(emboss_height)
                 scale([svg_scale, svg_scale, 1])
-                import("celeste.svg");
+                import("hen-on-ringed-planet.svg");
             }
         }
 
@@ -244,7 +222,7 @@ module rpi0_cover()
             zmove(-m2dot5_cut_length / 2)
             linear_extrude(m2dot5_cut_length)
             scale([svg_scale, svg_scale, 1])
-            import("celeste-cuts.svg");
+            import("cuts-for-hen-on-ringed-planet.svg");
 
             color("blue")
             zmove(m2dot5_cut_length / 2)
@@ -324,7 +302,7 @@ module rpi3b_cover()
                     xflip()
                     {
                         color("Violet")
-                        import("rpi3b-mini-case.stl");
+                        import("upstream/rpi3b-mini-case.stl");
 
                         xmove(0.5)
                         ymove(12)
@@ -350,7 +328,7 @@ module rpi3b_cover()
                 color("darkviolet")
                 linear_extrude(emboss_height)
                 scale([svg_scale, svg_scale, -1])
-                import("celeste.svg");
+                import("hen-on-ringed-planet.svg");
             }
         }
 
@@ -361,7 +339,7 @@ module rpi3b_cover()
             zmove(-m2dot5_cut_length / 2)
             linear_extrude(m2dot5_cut_length)
             scale([svg_scale, svg_scale, 1])
-            import("celeste-cuts.svg");
+            import("cuts-for-hen-on-ringed-planet.svg");
 
             color("red")
             ymove(-1 * ((rpi3_y-58)/2 - 3.5))
@@ -372,7 +350,6 @@ module rpi3b_cover()
             );
         }
     }
-    
 }
 
 module rpi3_base_plate()
@@ -407,28 +384,20 @@ module rpi3_base_plate()
     }
 }
 
-module picam_back()
+// Rapsberry Pi 3B
+rpi3_base_plate();
+xmove(100) rpi3b_cover();
+
+// Raspberry Pi 0
+ymove(120)
 {
-    print_part("lid");
-
-    zmove(6.26)
-    difference()
-    {
-        color("dodgerblue")
-        ymove(5)
-        zmove(-18.25)
-        import("camera-mount.stl");
-
-        downcube(size = [40, 40, 6.25]);
-    }
+    rpi0_base_plate();
+    xmove(100) rpi0_cover();
 }
 
-*rpi3_base_plate();
-*rpi3b_cover();
-
-*rpi0_base_plate();
-*yrot(180) rpi0_cover();
-
-
-print_part("camera");
-ymove(40) print_part("lid");
+// Raspberry Pi camera case
+xmove(-80)
+{
+    print_part("camera");
+    ymove(50) print_part("lid");
+}

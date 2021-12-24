@@ -8,3 +8,8 @@ Source and meshes for OpenSCAD models
 
 ## Each folder is an assembly
 Many are single parts, but some have multiple parts.
+
+## Start a new drawing
+```sh
+bash newscad.sh name-for-part
+```

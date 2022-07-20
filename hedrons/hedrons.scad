@@ -35,16 +35,22 @@ icosohedron_rotation_tilt = 90 - 26.57;
 
 module spike(side=80, height=150, spacing=0)
     let (
-         base = [side, side],
-         point = [0, 0]
+         sides = 5,
+         merge_angle = 360 / sides / 2,
+         merge_radius = side / 4,
+         merge_height = height / 3
     )
 {
     zflip_copy(offset=spacing)
-    hull()
+    union()
     {
-        zmove(height) sphere(r=0.1);
-        linear_extrude(height=0.1)
-        circle(d=side, $fn=6);
+        hull()
+        {
+            zmove(height) sphere(r=0.1);
+            linear_extrude(height=0.1) circle(d=side, $fn=sides);
+        }
+
+        zrot_copies(n=sides, r=merge_radius, sa=merge_angle) zmove(merge_height) sphere(d=side/2);
     }
 }
 
@@ -86,4 +92,7 @@ module icosohedratify()
 }
 
 // Objects
+//color("red")
 icosohedratify() spike();
+
+*spike();

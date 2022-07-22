@@ -26,7 +26,7 @@ mm_per_inch = 25.4;
 $fn = number_of_fragments;
 
 // Functions
-function framesize_for_layer(layer_number, base_size, top_size, height, thickness) =
+function framesizes(base_size, top_size, height, thickness) =
     let (
         layer_count=height/thickness,
         base_x=base_size[0],
@@ -35,13 +35,18 @@ function framesize_for_layer(layer_number, base_size, top_size, height, thicknes
         top_y=top_size[1],
         x_growth=(top_x-base_x)/layer_count,
         y_growth=(top_y-base_y)/layer_count,
-        linear_x=base_x + (layer_number*x_growth),
-        linear_y=base_y + (layer_number*y_growth),
-        two_pi=6.28,
-        x_mod=5*sin(400*two_pi*layer_number/layer_count),
-        y_mod=5*sin(400*two_pi*layer_number/layer_count)
+        two_pi=6.28
     )
-    [linear_x+1*x_mod, linear_y+1*y_mod];
+    [
+        for (layer = [0:layer_count])
+        let (
+            linear_x=base_x + (layer*x_growth),
+            linear_y=base_y + (layer*y_growth),
+            x_mod=5*sin(400*two_pi*layer/layer_count),
+            y_mod=5*sin(400*two_pi*layer/layer_count)
+        )
+        [linear_x+1*x_mod, linear_y+1*y_mod]
+    ];
 
 // Modules
 module frame(x=250, y=400, thickness=20)
@@ -62,14 +67,13 @@ module frame(x=250, y=400, thickness=20)
 
 module stack_by_layer(base_size, top_size, height, thickness, base_thickness)
     let (
-        layer_count=height/thickness
+        frame_params = framesizes(base_size, top_size, height, thickness)
     )
     {
-        for (layer = [0 : layer_count])
+        for (layer = [0 : len(frame_params)-1])
         let(
-            frame_params = framesize_for_layer(layer, base_size, top_size, height, thickness),
-            x=frame_params[0],
-            y=frame_params[1],
+            x=frame_params[layer][0],
+            y=frame_params[layer][1],
             z=layer*thickness
         )
         {
@@ -87,4 +91,6 @@ module stack_by_layer(base_size, top_size, height, thickness, base_thickness)
     }
 
 // Objects
-stack_by_layer(base_size=[127,203.2], top_size=[177.8,254], height=330.2, thickness=2, base_thickness=5);
+fine = 2;
+rough = 8;
+stack_by_layer(base_size=[127,203.2], top_size=[177.8,254], height=330.2, thickness=fine, base_thickness=5);

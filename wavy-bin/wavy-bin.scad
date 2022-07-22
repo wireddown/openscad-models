@@ -26,7 +26,7 @@ mm_per_inch = 25.4;
 $fn = number_of_fragments;
 
 // Functions
-function generate_frames(base_size, top_size, height, thickness) =
+function framesize_for_layer(layer_number, base_size, top_size, height, thickness) =
     let (
         layer_count=height/thickness,
         base_x=base_size[0],
@@ -34,9 +34,14 @@ function generate_frames(base_size, top_size, height, thickness) =
         top_x=top_size[0],
         top_y=top_size[1],
         x_growth=(top_x-base_x)/layer_count,
-        y_growth=(top_y-base_y)/layer_count
+        y_growth=(top_y-base_y)/layer_count,
+        linear_x=base_x + (layer_number*x_growth),
+        linear_y=base_y + (layer_number*y_growth),
+        two_pi=6.28,
+        x_mod=5*sin(400*two_pi*layer_number/layer_count),
+        y_mod=5*sin(400*two_pi*layer_number/layer_count)
     )
-    [x_growth, y_growth, layer_count];
+    [linear_x+1*x_mod, linear_y+1*y_mod];
 
 // Modules
 module frame(x=250, y=400, thickness=20)
@@ -55,35 +60,31 @@ module frame(x=250, y=400, thickness=20)
     sphere(r=thickness, $fn=8);
 }
 
-module stack_frames(thickness, base_thickness, xgrowth, ygrowth, layer_count, base_x, base_y)
+module stack_by_layer(base_size, top_size, height, thickness, base_thickness)
     let (
-    )
-{
-    for (i = [0:layer_count])
-    let (
-        x=base_x + i*xgrowth,
-        y=base_y + i*ygrowth,
-        height=thickness*i
+        layer_count=height/thickness
     )
     {
-        if (height <= base_thickness - 0.5*thickness)
+        for (layer = [0 : layer_count])
+        let(
+            frame_params = framesize_for_layer(layer, base_size, top_size, height, thickness),
+            x=frame_params[0],
+            y=frame_params[1],
+            z=layer*thickness
+        )
         {
-            hull()
-            zmove(height)
-            frame(x=x, y=y, thickness=thickness);
-
-        }
-        else
-        {
-            zmove(height)
-            frame(x=x, y=y, thickness=thickness);
+            zmove(z)
+            if (z <= base_thickness - 0.5*thickness)
+            {
+                color("purple")
+                hull() frame(x=x, y=y, thickness=thickness);
+            }
+            else
+            {
+                frame(x=x, y=y, thickness=thickness);
+            }
         }
     }
-}
 
-gframes = generate_frames(base_size=[11,22], top_size=[33,44], height=10, thickness=1);
-xgrowth = gframes[0];
-ygrowth = gframes[1];
-layer_count = gframes[2];
-echo(str(gframes))
-stack_frames(thickness=1, base_thickness=5, xgrowth=xgrowth, ygrowth=ygrowth, layer_count=layer_count, base_x=11, base_y=22);
+// Objects
+stack_by_layer(base_size=[127,203.2], top_size=[177.8,254], height=330.2, thickness=2, base_thickness=5);

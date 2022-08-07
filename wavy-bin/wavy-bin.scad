@@ -45,7 +45,7 @@ function framesizes(base_size, top_size, height, thickness, layer_multiplier) =
             x_mod = 5 * sin(400 * two_pi * layer / layer_count),
             y_mod = 5 * sin(100 * two_pi * layer / layer_count)
         )
-        [linear_x + 1 * x_mod, linear_y + 1 * y_mod]
+        [linear_x + x_mod, linear_y + y_mod]
     ];
 
 // Modules

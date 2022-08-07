@@ -28,30 +28,30 @@ $fn = number_of_fragments;
 // Functions
 function framesizes(base_size, top_size, height, thickness, layer_multiplier) =
     let (
-        layer_count=layer_multiplier*height/thickness,
-        base_x=base_size[0],
-        base_y=base_size[1],
-        top_x=top_size[0],
-        top_y=top_size[1],
-        x_growth=(top_x-base_x)/layer_count,
-        y_growth=(top_y-base_y)/layer_count,
-        two_pi=6.28
+        layer_count = layer_multiplier * height / thickness,
+        base_x = base_size[0],
+        base_y = base_size[1],
+        top_x = top_size[0],
+        top_y = top_size[1],
+        x_growth = (top_x - base_x) / layer_count,
+        y_growth = (top_y - base_y) / layer_count,
+        two_pi = 6.28
     )
     [
         for (layer = [0:layer_count])
         let (
-            linear_x=base_x + (layer*x_growth),
-            linear_y=base_y + (layer*y_growth),
-            x_mod=5*sin(400*two_pi*layer/layer_count),
-            y_mod=5*sin(100*two_pi*layer/layer_count)
+            linear_x = base_x + (layer * x_growth),
+            linear_y = base_y + (layer * y_growth),
+            x_mod = 5 * sin(400 * two_pi * layer / layer_count),
+            y_mod = 5 * sin(100 * two_pi * layer / layer_count)
         )
-        [linear_x+1*x_mod, linear_y+1*y_mod]
+        [linear_x + 1 * x_mod, linear_y + 1 * y_mod]
     ];
 
 // Modules
 module frame(x=250, y=400, thickness=20)
     let (
-        frame_radius=thickness/2
+        frame_radius = thickness / 2
     )
 {
     echo(str("frame(x=", x, ", y=", y, ", thickness=", thickness, ")"));
@@ -74,15 +74,15 @@ module stack_by_layer(base_size, top_size, height, thickness, base_thickness)
         frame_params = framesizes(base_size, top_size, height, thickness, layer_multiplier)
     )
     {
-        for (layer = [0 : len(frame_params)-1])
+        for (layer = [0 : len(frame_params) - 1])
         let(
-            x=frame_params[layer][0],
-            y=frame_params[layer][1],
-            z=layer*thickness/layer_multiplier
+            x = frame_params[layer][0],
+            y = frame_params[layer][1],
+            z = layer * thickness / layer_multiplier
         )
         {
             zmove(z)
-            if (z <= base_thickness - 0.5*thickness)
+            if (z <= base_thickness - 0.5 * thickness)
             {
                 color("purple")
                 hull() frame(x=x, y=y, thickness=thickness);

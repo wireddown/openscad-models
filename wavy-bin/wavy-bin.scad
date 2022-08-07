@@ -26,9 +26,9 @@ mm_per_inch = 25.4;
 $fn = number_of_fragments;
 
 // Functions
-function framesizes(base_size, top_size, height, thickness) =
+function framesizes(base_size, top_size, height, thickness, layer_multiplier) =
     let (
-        layer_count=height/thickness,
+        layer_count=layer_multiplier*height/thickness,
         base_x=base_size[0],
         base_y=base_size[1],
         top_x=top_size[0],
@@ -70,14 +70,15 @@ module frame(x=250, y=400, thickness=20)
 
 module stack_by_layer(base_size, top_size, height, thickness, base_thickness)
     let (
-        frame_params = framesizes(base_size, top_size, height, thickness)
+        layer_multiplier = 2,
+        frame_params = framesizes(base_size, top_size, height, thickness, layer_multiplier)
     )
     {
         for (layer = [0 : len(frame_params)-1])
         let(
             x=frame_params[layer][0],
             y=frame_params[layer][1],
-            z=layer*thickness
+            z=layer*thickness/layer_multiplier
         )
         {
             zmove(z)

@@ -53,20 +53,20 @@ module frame(x=250, y=400, thickness=20)
     let (
         frame_radius = thickness / 2
     )
-{
-    echo(str("frame(x=", x, ", y=", y, ", thickness=", thickness, ")"));
+    {
+        echo(str("frame(x=", x, ", y=", y, ", thickness=", thickness, ")"));
 
-    yspread(y)
-    hull()
-    xspread(x)
-    sphere(r=frame_radius, $fn=8);
+        yspread(y)
+        hull()
+        xspread(x)
+        sphere(r=frame_radius, $fn=8);
 
-    color("blue")
-    xspread(x)
-    hull()
-    yspread(y)
-    sphere(r=frame_radius, $fn=8);
-}
+        color("blue")
+        xspread(x)
+        hull()
+        yspread(y)
+        sphere(r=frame_radius, $fn=8);
+    }
 
 module stack_by_layer(base_size, top_size, height, thickness, base_thickness)
     let (
@@ -97,4 +97,10 @@ module stack_by_layer(base_size, top_size, height, thickness, base_thickness)
 // Objects
 fine = 2;
 rough = 8;
-stack_by_layer(base_size=[127,203.2], top_size=[177.8,254], height=330.2, thickness=fine, base_thickness=5);
+
+stack_by_layer(
+    base_size=[127,203.2],
+    top_size=[177.8,254],
+    height=330.2,
+    thickness=fine,
+    base_thickness=5);

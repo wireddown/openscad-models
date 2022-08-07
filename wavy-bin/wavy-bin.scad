@@ -50,19 +50,22 @@ function framesizes(base_size, top_size, height, thickness) =
 
 // Modules
 module frame(x=250, y=400, thickness=20)
+    let (
+        frame_radius=thickness/2
+    )
 {
     echo(str("frame(x=", x, ", y=", y, ", thickness=", thickness, ")"));
 
     yspread(y)
     hull()
     xspread(x)
-    sphere(r=thickness, $fn=8);
+    sphere(r=frame_radius, $fn=8);
 
     color("blue")
     xspread(x)
     hull()
     yspread(y)
-    sphere(r=thickness, $fn=8);
+    sphere(r=frame_radius, $fn=8);
 }
 
 module stack_by_layer(base_size, top_size, height, thickness, base_thickness)

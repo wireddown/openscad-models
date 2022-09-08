@@ -100,8 +100,8 @@ fine = 2;
 rough = 8;
 
 stack_by_layer(
-    base_size=[inches_as_mm(5),inches_as_mm(8)],
-    top_size=[inches_as_mm(7),inches_as_mm(10)],
-    height=330.2,
+    base_size=[inches_as_mm(4),inches_as_mm(6)],
+    top_size=[inches_as_mm(5),inches_as_mm(8)],
+    height=inches_as_mm(10),
     thickness=fine,
     base_thickness=5);

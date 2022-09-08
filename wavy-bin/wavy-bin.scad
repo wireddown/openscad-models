@@ -26,6 +26,7 @@ mm_per_inch = 25.4;
 $fn = number_of_fragments;
 
 // Functions
+function inches_as_mm(inches) = inches * mm_per_inch;
 function framesizes(base_size, top_size, height, thickness, layer_multiplier) =
     let (
         layer_count = layer_multiplier * height / thickness,
@@ -99,8 +100,8 @@ fine = 2;
 rough = 8;
 
 stack_by_layer(
-    base_size=[127,203.2],
-    top_size=[177.8,254],
+    base_size=[inches_as_mm(5),inches_as_mm(8)],
+    top_size=[inches_as_mm(7),inches_as_mm(10)],
     height=330.2,
     thickness=fine,
     base_thickness=5);

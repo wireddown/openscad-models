@@ -41,6 +41,21 @@ hole_r = 1.75;
 countersink_r = 3.15;
 countersink_h = 3;
 
+reinforce_size = [5, 16, 3];
+reinforce_x = -35.5;
+reinforce_y = 31;
+reinforce_z = 3.5;
+
+square_nut_height = 2.25;
+square_nut_side = 6;
+square_nut_z = 2.025;
+
+sqnut_xspread = 34;
+sqnut_y1 = 38;
+
+sqnut_x2 = -34;
+sqnut_y2 = -4.5;
+
 // Functions
 
 // Modules
@@ -48,7 +63,6 @@ module ender3_xaxis_bracket()
 {
     difference()
     {
-        color("MediumVioletRed")
         union()
         {
             xmove(plug_x)
@@ -56,6 +70,14 @@ module ender3_xaxis_bracket()
             zmove(plug_z)
             cylinder(h = thickness, r = plug_r);
 
+            // Extra material near the island mounting point
+            color("yellow")
+            xmove(reinforce_x)
+            ymove(reinforce_y)
+            zmove(reinforce_z)
+            cuboid(size=reinforce_size, fillet=1, edges=EDGE_TOP_RT);
+
+            color("MediumVioletRed")
             yrot(180)
             import("Ender_3_V2_Part_A.stl", convexity=4);
         }
@@ -63,15 +85,29 @@ module ender3_xaxis_bracket()
         union()
         color("Pink")
         {
+            // Through hole
             xmove(plug_x + hole_x_delta)
             ymove(plug_y + hole_y_delta)
             zmove(plug_z)
             cylinder(h = thickness, r = hole_r);
 
+            // Countersink
             xmove(plug_x + hole_x_delta)
             ymove(plug_y + hole_y_delta)
             zmove(plug_z)
             cylinder(h = countersink_h, r = countersink_r);
+
+            // Extra deep cuts for the square nuts
+            xmove(-1 * sqnut_xspread / 2)
+            ymove(sqnut_y1)
+            zmove(square_nut_z)
+            xspread(sqnut_xspread)
+            cuboid(size=[square_nut_side, square_nut_side, square_nut_height]);
+
+            xmove(sqnut_x2)
+            ymove(sqnut_y2)
+            zmove(square_nut_z - 0.5)
+            cuboid(size=[square_nut_side, square_nut_side, square_nut_height]);
         }
     }
 }
